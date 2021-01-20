@@ -130,7 +130,7 @@ export class OrdersComponent implements OnInit {
     
   }
   changeOrderStatusToRealized(order: Order){
-    if(this.isOrderPos(order)){
+    if(this.isOrderPos(order.id)){
       let r = confirm("Jesteś pewny?");
       if (r == true) {
         order.status_zamowienia = 'Zrealizowane';
