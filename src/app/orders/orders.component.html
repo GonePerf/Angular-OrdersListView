@@ -1,0 +1,86 @@
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nazwa kontrahenta</th>
+        <th scope="col">Numer zamówienia</th>
+        <th scope="col">Data utworzenia</th>
+        <th scope="col">Status</th>
+        <th scope="col">Wartość</th>
+        <th scope="col">Akcje</th>
+      </tr>
+    </thead>
+
+
+
+    <tbody *ngFor="let order of orders | async">      
+      <tr >
+        <th scope="row">1</th>
+        <td>{{ getContractorName(order.id_kontrahenta) }}</td>
+        <td>{{ order.nr_zamowienia }}</td>
+        <td style="width: 15%;">{{ order.created_at | date }} </td>
+        <td class="color_green">{{ order.status_zamowienia }}</td>
+        <td style="width: 10%;"> {{ order.wartosc_zamowienia | currency: 'PLN '}}</td>
+        <td style="width: 35%;">
+          <a class="nav-link" href="#" (click)="addOrderPos(order.id)" *ngIf="order.status_zamowienia != 'Zrealizowane'">Dodaj produkt</a>
+          <a class="nav-link" (click)="actionDelete(order.id)" href="#" *ngIf="order.status_zamowienia != 'Zrealizowane'">Usuń produkt</a>
+          <a class="nav-link" (click)="deleteOrder(order)" href="#" >Usuń zam.</a>
+          <a class="nav-link" href="#" *ngIf="order.status_zamowienia != 'Zrealizowane'" (click)="changeOrderStatusToRealized(order)">Zrealizowano</a>
+          <a class="nav-link" href="#" *ngIf="order.status_zamowienia == 'Zrealizowane'" (click)="changeOrderStatusToUnrealized(order)">Zmień status</a>
+        </td>
+      </tr>
+      <tr *ngIf="order.status_zamowienia == 'Zrealizowane'">
+        <td colspan="3" style="text-align: center;">Data realizacji:  <b>{{ order.updated_at | date }}</b></td>
+      </tr>
+
+
+
+      <tr *ngIf="isOrderPos(order.id)">
+        <th colspan="6">
+          <ul class="list-group">
+            <li class="list-group-item">Nazwa produktu</li>
+            <li class="list-group-item">Ilość</li>
+            <li class="list-group-item">Cena detaliczna</li>
+            <li class="list-group-item">Razem</li>
+          </ul>
+          <ul class="list-group" *ngFor="let order_pos of lastestValueOrderPos">
+            <li class="list-group-item" *ngIf="order_pos.id_zamowienia == order.id">{{ order_pos.nazwa }}</li>
+            <li class="list-group-item" *ngIf="order_pos.id_zamowienia == order.id">{{ order_pos.ilosc }}</li>
+            <li class="list-group-item" *ngIf="order_pos.id_zamowienia == order.id">{{ order_pos.cena_netto}}</li>
+            <li class="list-group-item" *ngIf="order_pos.id_zamowienia == order.id"> {{ order_pos.wartosc_zamowienia }}</li>
+            <button type="button" class="btn btn-danger" *ngIf="delete && order.id == orderId && order_pos.id_zamowienia == order.id" (click)="deleteOrderPos(order_pos, order)">Usuń</button>
+          </ul>
+        </th>
+      </tr>
+
+
+
+
+      <tr *ngIf="order_pos && order.id == orderId">
+        <th colspan="5" >
+          <div class="add_order_pos">
+            <div>
+              <select name="product_id" [(ngModel)]="product_id" class="custom-select" id="validationCustom05" required>
+                <option disabled selected value="">Produkt</option>
+                <option  *ngFor="let product of products | async" value="{{ product.id }}" >{{ product.nazwa }}</option>
+              </select>
+            </div>
+            <input class="form-control" [(ngModel)]="ilosc" type="number" placeholder="Ilość">
+          </div>
+          <button type="button" class="btn btn-success" (click)="addNewOrderPos(order)" >Dodaj</button>
+        </th>
+      </tr>
+      
+      
+      <!-- <tr>
+        <th scope="row">1</th>
+        <td>Drugi kontrahent</td>
+        <td>2312</td>
+        <td>29.06.2020</td>
+        <td class="color_green">Zrealizowane</td>
+        <td>2500 zł</td>
+        <td><a class="nav-link" href="#" >Dodaj produkt</a><a class="nav-link" href="#" >Usuń produkt</a></td>
+      </tr> -->
+      
+    </tbody>
+  </table>
